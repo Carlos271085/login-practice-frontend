@@ -1,20 +1,28 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
 
-  const [user, setUser] = useState(() => {
+  // Estado del usuario
+  const [user, setUser] = useState(null);
+
+  // Recuperar sesión al cargar la app
+  useEffect(() => {
     const savedUser = localStorage.getItem("user");
 
-    return savedUser ? JSON.parse(savedUser) : null;
-    });
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
 
+  // Login
   const login = (userData) => {
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
   };
 
+  // Logout
   const logout = () => {
     localStorage.removeItem("user");
     setUser(null);
@@ -33,6 +41,7 @@ export function AuthProvider({ children }) {
   );
 }
 
+// Hook personalizado
 export function useAuth() {
   return useContext(AuthContext);
 }
